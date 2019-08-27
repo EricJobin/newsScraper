@@ -18,27 +18,38 @@ axios.get("https://slashdot.org/").then(function(response) {
   // Select each element in the HTML body from which you want information.
   // NOTE: Cheerio selectors function similarly to jQuery's selectors,
   // but be sure to visit the package's npm page to see how it works
-  $("h2.story").each(function(i, element) {
 
-	// element.children[0].data
+	// div.fhroot row
 
-    // var title = $(element).children().text();
-	// var link = $(element).find("a").attr("href");
+	// this works, but garbage results at end
+  	$("article").each(function(i, element) {
+
+	// This doesn't work
+	// $("div.fhroot row").children("article").each(function(i, element) {
+
+
+
 	// var title = $(element).children().text();
 	// var link = $(element).find("a").attr("href");
 	
-	var elChildren = $(element).children()
-	
-	
-	
+
+	//this seems to get me the story body, with a lot of leading new lines and such
+	var storyBody = $(element).children('div.body').text();
+	storyBody = storyBody.trim();
+
+	// var storyLink = $(element).children('header').children('h2').children('span').children('a.story-sourcelnk')
+
+	var storyLink = $(element).children('header').children('h2').children('span').children('span').children('a.story-sourcelnk').attr("href");//Ok, this works, it's a bit insane, but it works.
 
 
+	var storyTitle = $(element).children('header').children('h2').children('span.story-title').children('a').text();
 
+	
     // Save these results in an object that we'll push into the results array we defined earlier
     results.push({
-    //   title: title,
-	//   link: link
-		children: elChildren
+		storyTitle: storyTitle,
+		storyBody: storyBody,
+		storyLink: storyLink
     });
   });
 
