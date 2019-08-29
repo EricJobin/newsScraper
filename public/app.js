@@ -1,23 +1,89 @@
-// Grab the articles as a json
+// Grab the articles as a json and renders them to dom
 $.getJSON("/scrape", function(data) {
-	// let testvar = data;
-	// debugger
 	console.log(data)
 	for (var i = 0; i < data.length; i++) {
-		// $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].link + "</p>");
-		// $("#articles").append(`
-		// <a href=${data[i].storyLink}>Title: ${data[i].storyTitle}</a><br> //For some reason sometimes the storyTitle would append after the </a> tag
-		// ${data[i].storyBody} <hr>`);
-
-		$("#articles").append(`
+		//Appending articles
+		$("#articles").append(`<div class = "savedArticle">
 		Title: ${data[i].storyTitle}<br>
 		Link: <a href=${data[i].storyLink}>${data[i].storyLink}</a><br>
-		${data[i].storyBody} <hr>`);
+		${data[i].storyBody} <br>`);
 
-		// storyTitle: storyTitle,
-		// storyBody: storyBody,
-		// storyLink: storyLink
+		//Appending notes, if any
+				if (data[i].userNote){
+			$("#articles").append(`<div class ="note">
+					${data[i].userNote}
+					<button type="button" class="removeNote" id=${data[i]._id}>Delete Note</button>
+			</div>`)
+		}
+		//Appending form to add note if no notes
+		else {
+		$("#articles").append(`
+			<form id="formId${data[i]._id}">
+				Article Notes:<br>
+				<input type="text" name="userNote${data[i]._id}"><br>
+				<input type="submit" value="Submit" class="addNote" id=${data[i]._id}>
+
+			</form>`)
+			// <input type="submit" value="Submit" class="addNote" id=${data[i]._id}>
+			//<button class="addNote" id=${data[i]._id}>Add Note</button>
+		}
+
+		$("#articles").append(`</div><hr>`)
+
 	}
+});
+
+//Dummy buttons for testing:
+// $("#articles").append(`
+// 	<form>
+// 		Article Notes:<br>
+// 		<input type="text" name="userNotedummy"><br>
+// 		<button class="addNote" id=dummyid>Add Note</button>
+// 	</form>`)
+
+// $("#articles").append(`<div class ="note">
+// 	Dummy Note displayed here
+// 	<button type="button" class="removeNote" id=dummyid2>Delete Note</button>
+// </div>`)
+
+
+// $("form").on('submit', function(event){
+//     event.preventDefault();
+// });
+
+function addNote(){
+	$("form").on('submit', function(event){
+		event.preventDefault();
+		console.log("click addNote");
+		var userNote=$(`input[name=userNote${this.id}`).val();
+		console.log(userNote);
+		console.log(this.id);
+	})
+}
+
+// function addNote(){
+// 	$(".addNote").on("click", function(){
+// 		event.preventDefault();
+// 		console.log("click addNote");
+// 		var userNote=$("input[name=userNotedummy").val();
+// 		console.log(userNote);
+// 		console.log(this.id);
+// 	})
+// }
+
+function removeNote(){
+	$(".removeNote").on("click", function(){
+		event.preventDefault();
+		console.log("click delNote")
+		console.log(this.id);
+	})
+}
+
+
+$(document).ready(function() {
+	addNote()
+	removeNote()
+	
 });
 
 
