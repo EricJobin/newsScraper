@@ -5,7 +5,7 @@ $.getJSON("/scrape", function(data) {
 		//Appending articles
 		$("#articles").append(`<div class = "savedArticle">
 		Title: ${data[i].storyTitle}<br>
-		Link: <a href=${data[i].storyLink}>${data[i].storyLink}</a><br>
+		Link: <a href=${data[i].storyLink}><strong>${data[i].storyLink}</strong></a><br>
 		${data[i].storyBody} <br>`);
 
 		//Appending notes, if any
@@ -26,6 +26,7 @@ $.getJSON("/scrape", function(data) {
 			</form>`)
 			// <input type="submit" value="Submit" class="addNote" id=${data[i]._id}>
 			//<button class="addNote" id=${data[i]._id}>Add Note</button>
+			// <button class="xbuttons">Click</button>
 		}
 
 		$("#articles").append(`</div><hr>`)
@@ -33,58 +34,73 @@ $.getJSON("/scrape", function(data) {
 	}
 });
 
-//Dummy buttons for testing:
-// $("#articles").append(`
-// 	<form>
-// 		Article Notes:<br>
-// 		<input type="text" name="userNotedummy"><br>
-// 		<button class="addNote" id=dummyid>Add Note</button>
-// 	</form>`)
-
-// $("#articles").append(`<div class ="note">
-// 	Dummy Note displayed here
-// 	<button type="button" class="removeNote" id=dummyid2>Delete Note</button>
-// </div>`)
-
-
-// $("form").on('submit', function(event){
-//     event.preventDefault();
-// });
-
+// --- Function to add note to database, called in document.on click below --------
 function addNote(){
-	$("form").on('submit', function(event){
-		event.preventDefault();
-		console.log("click addNote");
-		var userNote=$(`input[name=userNote${this.id}`).val();
-		console.log(userNote);
-		console.log(this.id);
+	event.preventDefault();
+	// console.log("click addNote");
+	let inputid= event.path[0].id;
+	var userNote=$(`input[name=userNote${inputid}`).val();
+
+	$.ajax({
+	    method: "POST",
+	    url: `/addnote/${inputid}`,
+	    data: {
+	    	userNote: userNote,
+	    }
 	})
+	.then(function(data) {
+		console.log(url);
+		console.log(data);
+	});
 }
 
-// function addNote(){
-// 	$(".addNote").on("click", function(){
-// 		event.preventDefault();
-// 		console.log("click addNote");
-// 		var userNote=$("input[name=userNotedummy").val();
-// 		console.log(userNote);
-// 		console.log(this.id);
-// 	})
+//----------------------------------------------REFERENCE CODE----------------------------------------------------
+$(document).on("click", "#savenote", function() {
+	  // Grab the id associated with the article from the submit button
+	  var thisId = $(this).attr("data-id");
+	
+	  // Run a POST request to change the note, using what's entered in the inputs
+	  $.ajax({
+	    method: "POST",
+	    url: "/articles/" + thisId,
+	    data: {
+	      // Value taken from title input
+	      title: $("#titleinput").val(),
+	      // Value taken from note textarea
+	      body: $("#bodyinput").val()
+	    }
+	  })
+	    // With that done
+	    .then(function(data) {
+	      // Log the response
+	      console.log(data);
+	      // Empty the notes section
+	      $("#notes").empty();
+	    });
+	
+	  // Also, remove the values entered in the input and textarea for note entry
+	  $("#titleinput").val("");
+	  $("#bodyinput").val("");
+});//-------------------------END OF REFERENCE CODE------------------------------------
+
+//------------------------------------
+function removeNote(){
+	event.preventDefault();
+	// console.log("click delNote")
+	// console.log(this.id);
+}
+
+// function clickTest(){
+// 	event.preventDefault();
+// 	console.log("clickky")
 // }
 
-function removeNote(){
-	$(".removeNote").on("click", function(){
-		event.preventDefault();
-		console.log("click delNote")
-		console.log(this.id);
-	})
-}
+$(document).on("click", ".addNote, .removeNote", function() {
+	addNote();
+	removeNote();
 
 
-$(document).ready(function() {
-	addNote()
-	removeNote()
-	
-});
+})
 
 
 // // Whenever someone clicks a p tag
